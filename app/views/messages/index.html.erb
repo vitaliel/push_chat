@@ -1,5 +1,15 @@
-<h1>Listing messages</h1>
+<h1>Chat</h1>
 
 <script>
 var activity_url = "/activity?id=1", join_url = "", leave_url = "", publish_url = "/messages/publish";
 </script>
+
+<% form_remote_tag(:url => messages_path) do -%>
+<%= text_area_tag "message", "", :rows => 1, :cols => 70 %>
+<%= submit_tag "Send" %>
+<% end -%>
+
+<div>
+  <ul id="chat_messages">
+  </ul>
+</div>

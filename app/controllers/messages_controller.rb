@@ -1,7 +1,4 @@
 class MessagesController < ApplicationController
-  def publish
-
-  end
 
   # GET /messages
   # GET /messages.xml
@@ -14,76 +11,21 @@ class MessagesController < ApplicationController
     end
   end
 
-  # GET /messages/1
-  # GET /messages/1.xml
-  def show
-    @message = Message.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @message }
-    end
-  end
-
-  # GET /messages/new
-  # GET /messages/new.xml
-  def new
-    @message = Message.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @message }
-    end
-  end
-
-  # GET /messages/1/edit
-  def edit
-    @message = Message.find(params[:id])
-  end
-
   # POST /messages
   # POST /messages.xml
   def create
-    @message = Message.new(params[:message])
+    message = {:msg => params[:message], :type => "Chat"}
 
-    respond_to do |format|
-      if @message.save
-        flash[:notice] = 'Message was successfully created.'
-        format.html { redirect_to(@message) }
-        format.xml  { render :xml => @message, :status => :created, :location => @message }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @message.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
+    publisher_path = request.protocol + request.host_with_port + "/publish" + "?id=1"
+    logger.debug publisher_path
 
-  # PUT /messages/1
-  # PUT /messages/1.xml
-  def update
-    @message = Message.find(params[:id])
+    url          = URI.parse(publisher_path)
+    http         = Net::HTTP.new(url.host, url.port)
+    req      = Net::HTTP::Post.new(url.path + "?" + url.query)
+    req.body = message.to_json
+    resp = http.request(req)
+    logger.debug resp.body.inspect
 
-    respond_to do |format|
-      if @message.update_attributes(params[:message])
-        flash[:notice] = 'Message was successfully updated.'
-        format.html { redirect_to(@message) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @message.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /messages/1
-  # DELETE /messages/1.xml
-  def destroy
-    @message = Message.find(params[:id])
-    @message.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(messages_url) }
-      format.xml  { head :ok }
-    end
+    render :action => 'message'
   end
 end

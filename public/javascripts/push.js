@@ -16,7 +16,8 @@ var Subscriber = function() {
         requestHeaders: opts['head'],
         onSuccess: function(transport) {
           var response = eval_json(transport.responseText);
-          eval(response["type"]).show(response);
+          if(response["type"]) eval(response["type"]).show(response);
+          //alert(response);
           var modified = transport.getHeader("Last-Modified");
           var etag     = transport.getHeader("Etag");
           Subscriber.listen({'head': {'If-Modified-Since': modified, 'If-None-Match': etag}});
@@ -38,6 +39,13 @@ var Subscriber = function() {
     }
   };
 }();
+
+var Chat = {
+  show: function(response) {
+    msg = response["msg"];
+    new Insertion.Top($("chat_messages"), "<li>" + msg + "</li>");
+  }
+};
 
 var Publisher = function() {
   return {
