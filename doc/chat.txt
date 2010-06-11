@@ -1,0 +1,26 @@
+= Rails chat using Ningx push module
+
+Copy 
+----
+cp push.conf /etc/nginx/site-available/push_chat
+----
+
+/etc/nginx/conf.d/rails.conf
+----
+upstream rails {
+      server localhost:3000;
+}
+----
+
+Enable nginx site
+----
+cd /etc/nginx/sites-enabled
+ln -s ../sites-available/push_chat
+----
+
+Edit /etc/hosts
+----
+192.168.0.22 push-chat # change IP address to match your configuration
+----
+
+Now open http://push-chat/
